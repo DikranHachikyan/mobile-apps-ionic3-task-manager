@@ -3,30 +3,67 @@
     <ion-title>
       Task Manager
     </ion-title>
+    <ion-buttons end>
+      <button ion-button
+              icon-left
+              (click)="toggleReorder()">
+        <ion-icon name="reorder"></ion-icon>         
+      </button>
+      <button ion-button
+              icon-left
+              (click)="addNewTask()">
+        <ion-icon name="add-circle"></ion-icon>          
+      </button>
+    </ion-buttons>
   </ion-navbar>
 </ion-header>
 
 <ion-content padding>
-  <ion-list>
-  	<ion-item *ngFor="let task of tasks" text-wrap>
-  		<ion-label>
-  			<ion-icon name="star-outline" 
-  				      *ngIf="task.status == taskStatus.open"
-  				      color="secondary"></ion-icon>
-  			<ion-icon name="star-half" 
-  			      	  *ngIf="task.status == taskStatus.current"
-  			      	  color="danger"></ion-icon>
-  			<ion-icon name="star" 
-  			          *ngIf="task.status == taskStatus.done"
-  			          color="primary"></ion-icon>
-  			{{task.title}}
-  		</ion-label>
-  		<button ion-button
-  				icon-only
-  				clear
-  				item-end>
-  			<ion-icon name="hammer"></ion-icon>
-  		</button>
-  	</ion-item>
+  <ion-refresher (ionRefresh)="reloadTasks($event)">
+    <ion-refresher-content>
+    </ion-refresher-content>
+  </ion-refresher>
+  <ion-list [reorder]="reorderIsEnabled">
+    <ion-item-sliding #slidingItem *ngFor="let task of tasks; index as idx">
+      <ion-item-options side="left">
+        <button ion-button
+                color="danger"
+                (click)="archiveTask(task.id, slidingItem)">
+          <ion-icon name="archive"></ion-icon>
+          Arch          
+        </button>
+      </ion-item-options>
+      <!-- List Item (Task)-->
+      <ion-item text-wrap>
+      <ion-label>
+        <ion-icon name="star-outline" 
+                  *ngIf="task.status == taskStatus.open"
+                  color="secondary"></ion-icon>
+        <ion-icon name="star-half" 
+                  *ngIf="task.status == taskStatus.current"
+                  color="danger"></ion-icon>
+        <ion-icon name="star" 
+                  *ngIf="task.status == taskStatus.done"
+                  color="primary"></ion-icon>
+        {{task.title}}
+      </ion-label>
+    </ion-item>
+      <!-- End List Item-->
+      <ion-item-options side="right">
+        <!-- Edit Task -->
+        <button ion-button
+                (click)="editTask(task.id, slidingItem)">
+          <ion-icon name="hammer"></ion-icon>
+          Edit
+      </button>
+      <!-- Mark as Done -->
+      <button ion-button
+              color="secondary"
+              (click)="markAsDone(task.id, slidingItem)">
+          <ion-icon name="cloud-done"></ion-icon>
+          Done
+      </button>
+      </ion-item-options>
+    </ion-item-sliding>
   </ion-list>
 </ion-content>

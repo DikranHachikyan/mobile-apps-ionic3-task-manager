@@ -1,6 +1,8 @@
 import { Component } from '@angular/core';
 import { NavController } from 'ionic-angular';
-
+//from libs
+import { ItemSliding } from 'ionic-angular';
+//app
 import { Task, TaskStatus } from '../../model/task';
 
 @Component({
@@ -20,8 +22,36 @@ export class HomePage {
   
   taskStatus:any = TaskStatus;
 
+  reorderIsEnabled:boolean = false;
+
   constructor(public navCtrl: NavController) {
 
   }
 
+  archiveTask(taskId:number, slidingItem: ItemSliding):void{
+    console.log(`archive:${taskId}`);
+    slidingItem.close();
+  }
+
+  editTask(taskId:number, slidingItem: ItemSliding):void{
+    console.log(`edit:${taskId}`);
+    slidingItem.close();
+  }
+
+  markAsDone(taskId:number, slidingItem: ItemSliding):void{
+    console.log(`mark as done:${taskId}`);
+    slidingItem.close();
+  }
+
+  toggleReorder():void{
+    this.reorderIsEnabled = ! this.reorderIsEnabled;
+  }
+
+  addNewTask():void{
+
+  }
+
+  reloadTasks(event):void{
+    setTimeout(()=>event.complete(), 1000);
+  }
 }
