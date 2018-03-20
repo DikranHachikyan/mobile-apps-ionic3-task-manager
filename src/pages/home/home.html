@@ -19,7 +19,7 @@
 </ion-header>
 
 <ion-content padding>
-  <ion-refresher (ionRefresh)="reloadTasks($event)">
+  <ion-refresher [enabled]="!reorderIsEnabled" (ionRefresh)="reloadTasks($event)">
     <ion-refresher-content>
     </ion-refresher-content>
   </ion-refresher>

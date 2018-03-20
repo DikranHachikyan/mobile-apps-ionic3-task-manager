@@ -1,9 +1,12 @@
 import { Component } from '@angular/core';
 import { NavController } from 'ionic-angular';
 //from libs
-import { ItemSliding } from 'ionic-angular';
+import { ItemSliding,
+         AlertController } from 'ionic-angular';
 //app
 import { Task, TaskStatus } from '../../model/task';
+import { TasksDataProvider } from '../../providers/tasks-data/tasks-data';
+
 
 @Component({
   selector: 'page-home',
@@ -11,21 +14,29 @@ import { Task, TaskStatus } from '../../model/task';
 })
 export class HomePage {
 
-  tasks: Task[] = [
-  	{ id:11, title:"Gratitude list – 5 things you are grateful for", status:TaskStatus.open},
-    { id:12, title:"Start the day with your WHY.", status:TaskStatus.open},
-    { id:13, title:"Fresh green juice", status:TaskStatus.current},
-    { id:14, title:"Write 500 words", status:TaskStatus.done},
-    { id:15, title:"Review the day and check in with the next few days", status:TaskStatus.done},
-    { id:16, title:"Clear desk ready for a fresh day tomorrow!", status:TaskStatus.open}
-  ];
+  tasks: Task[] = [];
   
   taskStatus:any = TaskStatus;
 
   reorderIsEnabled:boolean = false;
 
-  constructor(public navCtrl: NavController) {
+  constructor(public navCtrl: NavController,
+              private tasksDataProvider:TasksDataProvider,
+              private alertCtrl:AlertController) {
 
+  }
+
+  ionViewDidLoad(){
+    this.loadTasks();
+  }
+
+  loadTasks():void{
+     console.log('before data load');
+     this.tasksDataProvider.loadTasks()
+                           .subscribe( (data)=>this.tasks = data ,
+                                       (err)=>console.log(`Error load tasks ${err}`),
+                                       ()=>console.log(`Load Tasks Completed`));
+     console.log('after data load');
   }
 
   archiveTask(taskId:number, slidingItem: ItemSliding):void{
@@ -48,7 +59,34 @@ export class HomePage {
   }
 
   addNewTask():void{
+    let newTask = this.alertCtrl.create({
+        title: 'Add New Task',
+        message: 'Enter your task',
+        inputs:[{
+          type:'text',
+          name:'taskTitle',
+          placeholder:'Task Title'
+        }], //inputs
+        buttons:[{
+          text:'Cancel'
+        },
+        {
+          text:'Add',
+          handler: (data)=>{
+            
+            let task:Task = {
+              id: 100,
+              title: data.taskTitle,
+              status: this.taskStatus.open
+            }
+            console.log(task);
+            this.tasksDataProvider.addTask(task);
+          }
+        }]//buttons
+    }); //create
 
+    newTask.present();
+    
   }
 
   reloadTasks(event):void{
